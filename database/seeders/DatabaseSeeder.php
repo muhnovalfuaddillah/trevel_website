@@ -118,7 +118,7 @@ class DatabaseSeeder extends Seeder
         Maintenance::create([
             'vehicle_id' => $v4->id,
             'tanggal_perawatan' => $today,
-            'jenis_perawatan' => ['Servis mesin', 'Ganti oli'],
+            'jenis_perawatan' => ['Servis Mesin', 'Ganti Oli'],
             'tujuan_perawatan' => 'Perbaikan',
             'biaya' => 1250000.00,
             'catatan' => 'Perbaikan radiator dan ganti oli mesin 10W-40'

@@ -15,13 +15,18 @@ class Maintenance extends Model
         'jenis_perawatan',
         'tujuan_perawatan',
         'biaya',
+        'kilometer',
+        'petugas_perawatan',
         'catatan',
+        'foto_bukti',
     ];
 
     protected $casts = [
         'tanggal_perawatan' => 'date',
         'jenis_perawatan' => 'array',
+        'foto_bukti' => 'array',
         'biaya' => 'decimal:2',
+        'kilometer' => 'integer',
     ];
 
     public function vehicle()

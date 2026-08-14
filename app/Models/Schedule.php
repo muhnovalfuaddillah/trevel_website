@@ -13,12 +13,15 @@ class Schedule extends Model
         'tanggal_keberangkatan',
         'vehicle_id',
         'driver_id',
+        'driver_2_id',
         'rute',
+        'tarif',
         'status_perjalanan',
     ];
 
     protected $casts = [
         'tanggal_keberangkatan' => 'datetime',
+        'tarif' => 'decimal:2',
     ];
 
     public function vehicle()
@@ -29,6 +32,11 @@ class Schedule extends Model
     public function driver()
     {
         return $this->belongsTo(Driver::class);
+    }
+
+    public function driver2()
+    {
+        return $this->belongsTo(Driver::class, 'driver_2_id');
     }
 
     public function bookings()

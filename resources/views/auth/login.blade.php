@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-950 text-slate-100">
+<html lang="id" class="h-full bg-slate-950 text-slate-100 dark">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login System - TravelManager</title>
+    <title>Login System - TravelManager Executive</title>
 
     <!-- Google Fonts & Material Symbols -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
 
     <!-- Tailwind CSS -->
@@ -17,31 +17,58 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(16px);
+        body {
+            background-color: #020617;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(2, 132, 199, 0.18) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 30%, rgba(99, 102, 241, 0.15) 0px, transparent 70%);
+            background-attachment: fixed;
+        }
+
+        .glass-portal {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(56, 189, 248, 0.1);
+        }
+
+        .swal2-popup {
+            background-color: #0b1329 !important;
+            color: #f8fafc !important;
+            border: 1px solid rgba(56, 189, 248, 0.2) !important;
+            border-radius: 1.25rem !important;
+        }
+        .swal2-title {
+            color: #ffffff !important;
+            font-family: 'Outfit', sans-serif !important;
         }
     </style>
 </head>
-<body class="h-full flex items-center justify-center p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black font-sans">
+<body class="h-full flex items-center justify-center p-4 font-sans selection:bg-sky-500 selection:text-white">
 
     <div class="w-full max-w-md space-y-6">
         
-        <!-- App Header Logo -->
-        <div class="text-center space-y-2">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white mx-auto shadow-xl shadow-sky-500/20">
-                <span class="material-symbols-outlined text-3xl">directions_bus</span>
+        <!-- App Header Brand Logo -->
+        <div class="text-center space-y-3">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 via-indigo-500 to-amber-500 p-0.5 mx-auto shadow-2xl shadow-sky-500/30 transition-transform hover:scale-105 duration-300">
+                <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-sky-400">
+                    <span class="material-symbols-outlined text-3xl">directions_bus</span>
+                </div>
             </div>
-            <h1 class="font-display font-extrabold text-2xl text-white tracking-wide">TravelManager</h1>
-            <p class="text-xs text-slate-400">Sistem Manajemen Operasional & Keuangan Travel</p>
+            <div>
+                <h1 class="font-display font-black text-3xl text-white tracking-wide">TravelManager</h1>
+                <p class="text-xs text-sky-300/80 font-medium mt-1">Sistem Manajemen Fleet & Operasional Travel</p>
+            </div>
         </div>
 
-        <!-- Login Card -->
-        <div class="glass-panel p-8 rounded-3xl shadow-2xl space-y-6">
-            <div>
-                <h2 class="font-display font-bold text-lg text-white">Masuk ke Akun Anda</h2>
-                <p class="text-xs text-slate-400 mt-1">Masukkan Email (Owner) atau Nomor HP (Supir) beserta kata sandi Anda.</p>
+        <!-- Login Glass Card Portal -->
+        <div class="glass-portal p-8 rounded-3xl space-y-6">
+
+            <div class="space-y-1">
+                <h2 class="font-display font-bold text-xl text-white">Masuk ke Akun Anda</h2>
+                <p class="text-xs text-slate-400">Masukkan Email (Owner) atau Nomor HP (Supir) beserta kata sandi Anda.</p>
             </div>
 
             <!-- Login Form -->
@@ -49,57 +76,72 @@
                 @csrf
 
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1">
+                    <label class="block font-semibold text-slate-300 mb-1.5">
                         Email (Owner) / Nomor HP (Supir)
                     </label>
                     <div class="relative">
-                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-sm">account_circle</span>
+                        <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-500 text-base">account_circle</span>
                         <input type="text" id="login" name="login" value="{{ old('login') }}" required placeholder="owner@travel.com atau 081298765432"
-                               class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-sky-500">
+                               class="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-slate-300 mb-1">Kata Sandi (Password)</label>
+                    <label class="block font-semibold text-slate-300 mb-1.5">Kata Sandi (Password)</label>
                     <div class="relative">
-                        <span class="material-symbols-outlined absolute left-3 top-2.5 text-slate-500 text-sm">lock</span>
+                        <span class="material-symbols-outlined absolute left-3.5 top-3 text-slate-500 text-base">lock</span>
                         <input type="password" id="password" name="password" required placeholder="••••••••"
-                               class="w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900/90 border border-slate-700 text-white focus:outline-none focus:border-sky-500">
+                               class="w-full pl-10 pr-10 py-3 rounded-2xl bg-slate-900/90 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all">
+                        <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3.5 top-3 text-slate-500 hover:text-slate-300 focus:outline-none">
+                            <span id="pass-icon" class="material-symbols-outlined text-base">visibility</span>
+                        </button>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between text-[11px] pt-1">
                     <label class="flex items-center gap-2 cursor-pointer text-slate-400 hover:text-slate-200">
                         <input type="checkbox" name="remember" class="rounded bg-slate-900 border-slate-700 text-sky-600 focus:ring-0">
-                        Ingat Saya
+                        Ingat Saya di Perangkat Ini
                     </label>
                 </div>
 
-                <button type="submit" class="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 transition-all flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-sm">login</span>
-                    Masuk ke System
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs shadow-lg shadow-sky-600/30 transition-all flex items-center justify-center gap-2 group">
+                    <span class="material-symbols-outlined text-base group-hover:translate-x-0.5 transition-transform">login</span>
+                    Masuk ke Sistem Travel
                 </button>
             </form>
 
-            <!-- Lupa Password & Support Notice for Supir -->
+            <!-- Support Notice -->
             <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-[11px] space-y-1">
                 <div class="flex items-center gap-1.5 font-bold text-amber-400">
                     <span class="material-symbols-outlined text-sm">info</span>
-                    Informasi Lupa Password & Kendala Login
+                    Informasi Akun Supir
                 </div>
                 <p class="text-slate-300 leading-relaxed">
-                    Apabila terjadi kesalahan login, lupa nomor HP, atau lupa kata sandi Supir, silakan <strong>menghubungi Owner / Management Travel</strong> untuk bantuan kata sandi atau reset akun.
+                    Pengemudi/Supir masuk menggunakan <strong>Nomor HP Terdaftar</strong>. Apabila terjadi kesalahan login atau lupa kata sandi, hubungi Management Travel.
                 </p>
             </div>
         </div>
 
-        <p class="text-center text-[11px] text-slate-500">
+        <p class="text-center text-[11px] text-slate-500 font-medium">
             &copy; {{ date('Y') }} TravelManager System. All rights reserved.
         </p>
 
     </div>
 
     <script>
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('password');
+            const passIcon = document.getElementById('pass-icon');
+            if (passInput.type === 'password') {
+                passInput.type = 'text';
+                passIcon.textContent = 'visibility_off';
+            } else {
+                passInput.type = 'password';
+                passIcon.textContent = 'visibility';
+            }
+        }
+
         @if(session('success'))
             Swal.fire({
                 icon: 'success',
@@ -109,8 +151,6 @@
                 showConfirmButton: false,
                 toast: true,
                 position: 'top-end',
-                background: '#0f172a',
-                color: '#f8fafc'
             });
         @endif
 
@@ -119,8 +159,6 @@
                 icon: 'error',
                 title: 'Gagal Login!',
                 text: "{{ $errors->first() }}",
-                background: '#0f172a',
-                color: '#f8fafc'
             });
         @endif
     </script>

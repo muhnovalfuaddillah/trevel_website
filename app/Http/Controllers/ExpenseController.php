@@ -10,13 +10,36 @@ class ExpenseController extends Controller
 {
     public function index()
     {
-        if (!auth()->user() || !auth()->user()->isOwner()) {
-            return redirect()->route('dashboard')->with('error', 'Akses Ditolak! Fitur Pengeluaran Operasional hanya dapat diakses oleh Owner.');
+        $user = auth()->user();
+        if (!$user) {
+            return redirect()->route('login');
         }
 
-        // Limit to 10 newest operational expense records
-        $expenses = Expense::with('schedule')->latest('tanggal')->take(10)->get();
-        $schedules = Schedule::with('vehicle')->latest()->take(10)->get();
+        if ($user->isSupir()) {
+            $driverRecord = \App\Models\Driver::find($user->driver_id) ?? \App\Models\Driver::where('nama', 'LIKE', '%' . $user->name . '%')->first();
+            $driverId = $driverRecord->id ?? 0;
+
+            $driverScheduleIds = Schedule::where('driver_id', $driverId)
+                ->orWhere('driver_2_id', $driverId)
+                ->pluck('id');
+
+            $expenses = Expense::with('schedule.vehicle')
+                ->whereIn('schedule_id', $driverScheduleIds)
+                ->latest('tanggal')
+                ->take(10)
+                ->get();
+
+            $schedules = Schedule::with('vehicle')
+                ->where(function($q) use ($driverId) {
+                    $q->where('driver_id', $driverId)->orWhere('driver_2_id', $driverId);
+                })
+                ->latest()
+                ->take(10)
+                ->get();
+        } else {
+            $expenses = Expense::with('schedule.vehicle')->latest('tanggal')->take(10)->get();
+            $schedules = Schedule::with('vehicle')->latest()->take(10)->get();
+        }
 
         return view('expenses.index', compact('expenses', 'schedules'));
     }

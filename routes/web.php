@@ -12,6 +12,14 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 
+// Root Route (Redirect to Login or Dashboard)
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return redirect()->route('login');
+})->name('home');
+
 // Auth Routes (Guest)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -23,16 +31,21 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard (Customized per role)
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'index']);
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Profile Route (Available to both)
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::put('/profile/owner', [ProfileController::class, 'updateOwner'])->name('profile.updateOwner');
 
-    // Shared Operations (Booking Travel & Jadwal Perjalanan & Driver Profile)
-    Route::resource('bookings', BookingController::class)->except(['create', 'edit', 'show']);
+    // Redirect bookings directly to Jadwal Perjalanan (/schedules)
+    Route::get('/bookings', function () {
+        return redirect()->route('schedules.index');
+    })->name('bookings.index');
+
+    // Shared Operations (Jadwal Perjalanan, Maintenance, Expenses & Driver Profile)
     Route::resource('schedules', ScheduleController::class)->except(['create', 'edit', 'show']);
+    Route::resource('maintenances', MaintenanceController::class)->except(['create', 'edit', 'show']);
+    Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
     Route::get('/drivers', [DriverController::class, 'index'])->name('drivers.index');
     Route::put('/drivers/{driver}', [DriverController::class, 'update'])->name('drivers.update');
 
@@ -43,8 +56,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/drivers/{driver}', [DriverController::class, 'destroy'])->name('drivers.destroy');
         Route::post('/drivers/{driver}/verify', [DriverController::class, 'verify'])->name('drivers.verify');
         Route::post('/bookings/{booking}/verify', [BookingController::class, 'verify'])->name('bookings.verify');
-        Route::resource('maintenances', MaintenanceController::class)->except(['create', 'edit', 'show']);
-        Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/reports/expenses', [ReportController::class, 'expensesReport'])->name('reports.expenses');
     });
 });

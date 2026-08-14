@@ -28,11 +28,13 @@ class ReportController extends Controller
 
         // 1. Build Base Queries
         $bookingsQuery = Booking::with(['driver', 'vehicle']);
+        $schedulesQuery = \App\Models\Schedule::with(['driver', 'vehicle']);
         $expensesQuery = Expense::with('schedule.vehicle');
         $maintenancesQuery = Maintenance::with('vehicle');
 
         if ($selectedVehicleId) {
             $bookingsQuery->where('vehicle_id', $selectedVehicleId);
+            $schedulesQuery->where('vehicle_id', $selectedVehicleId);
             $expensesQuery->whereHas('schedule', function ($q) use ($selectedVehicleId) {
                 $q->where('vehicle_id', $selectedVehicleId);
             });
@@ -41,20 +43,23 @@ class ReportController extends Controller
 
         if ($periodType === 'harian') {
             $bookingsQuery->whereBetween('tanggal_berangkat', [$startDate, $endDate]);
+            $schedulesQuery->whereBetween('tanggal_keberangkatan', [$startDate, $endDate]);
             $expensesQuery->whereBetween('tanggal', [$startDate, $endDate]);
             $maintenancesQuery->whereBetween('tanggal_perawatan', [$startDate, $endDate]);
         } elseif ($periodType === 'bulanan') {
             $bookingsQuery->whereYear('tanggal_berangkat', $selectedYear);
+            $schedulesQuery->whereYear('tanggal_keberangkatan', $selectedYear);
             $expensesQuery->whereYear('tanggal', $selectedYear);
             $maintenancesQuery->whereYear('tanggal_perawatan', $selectedYear);
         }
 
         $allBookings = $bookingsQuery->get();
+        $allSchedules = $schedulesQuery->get();
         $allExpenses = $expensesQuery->get();
         $allMaintenances = $maintenancesQuery->get();
 
         // Exact Calculations
-        $totalDanaMasuk = $allBookings->sum('tarif');
+        $totalDanaMasuk = $allBookings->sum('tarif') + $allSchedules->sum('tarif');
         $totalPengeluaranOperasional = $allExpenses->sum('jumlah');
         $totalBiayaMaintenance = $allMaintenances->sum('biaya');
         $totalDanaKeluar = $totalPengeluaranOperasional + $totalBiayaMaintenance;
@@ -69,7 +74,27 @@ class ReportController extends Controller
         $expensesByCategory = $allExpenses->groupBy('kategori')->map(fn($item) => $item->sum('jumlah'));
 
         // 2. Detailed Transactions (Top 10 Newest for Each Category)
-        $detailDanaMasuk = $allBookings->sortByDesc('tanggal_berangkat')->take(10);
+        $mappedBookings = $allBookings->map(function($b) {
+            return (object) [
+                'asal' => $b->asal ?? 'Booking',
+                'tujuan' => $b->tujuan ?? 'Pelanggan',
+                'tarif' => $b->tarif,
+                'vehicle' => $b->vehicle,
+                'tanggal_berangkat' => $b->tanggal_berangkat,
+            ];
+        });
+
+        $mappedSchedules = $allSchedules->map(function($s) {
+            return (object) [
+                'asal' => 'Trip',
+                'tujuan' => $s->rute,
+                'tarif' => $s->tarif,
+                'vehicle' => $s->vehicle,
+                'tanggal_berangkat' => $s->tanggal_keberangkatan,
+            ];
+        });
+
+        $detailDanaMasuk = $mappedBookings->concat($mappedSchedules)->sortByDesc('tanggal_berangkat')->take(10);
         $detailDanaKeluarOps = $allExpenses->sortByDesc('tanggal')->take(10);
         $detailDanaKeluarSrv = $allMaintenances->sortByDesc('tanggal_perawatan')->take(10);
 
@@ -81,7 +106,10 @@ class ReportController extends Controller
             foreach ($period as $date) {
                 $dateStr = $date->format('Y-m-d');
                 
-                $masuk = $allBookings->filter(fn($b) => $b->tanggal_berangkat->format('Y-m-d') === $dateStr)->sum('tarif');
+                $masukB = $allBookings->filter(fn($b) => $b->tanggal_berangkat->format('Y-m-d') === $dateStr)->sum('tarif');
+                $masukS = $allSchedules->filter(fn($s) => $s->tanggal_keberangkatan->format('Y-m-d') === $dateStr)->sum('tarif');
+                $masuk = $masukB + $masukS;
+
                 $keluarOps = $allExpenses->filter(fn($e) => $e->tanggal->format('Y-m-d') === $dateStr)->sum('jumlah');
                 $keluarSrv = $allMaintenances->filter(fn($m) => $m->tanggal_perawatan->format('Y-m-d') === $dateStr)->sum('biaya');
                 $totalKeluar = $keluarOps + $keluarSrv;
@@ -102,7 +130,10 @@ class ReportController extends Controller
                 $monthDate = Carbon::create($selectedYear, $m, 1);
                 $monthStr = $monthDate->format('Y-m');
 
-                $masuk = $allBookings->filter(fn($b) => $b->tanggal_berangkat->format('Y-m') === $monthStr)->sum('tarif');
+                $masukB = $allBookings->filter(fn($b) => $b->tanggal_berangkat->format('Y-m') === $monthStr)->sum('tarif');
+                $masukS = $allSchedules->filter(fn($s) => $s->tanggal_keberangkatan->format('Y-m') === $monthStr)->sum('tarif');
+                $masuk = $masukB + $masukS;
+
                 $keluarOps = $allExpenses->filter(fn($e) => $e->tanggal->format('Y-m') === $monthStr)->sum('jumlah');
                 $keluarSrv = $allMaintenances->filter(fn($m) => $m->tanggal_perawatan->format('Y-m') === $monthStr)->sum('biaya');
                 $totalKeluar = $keluarOps + $keluarSrv;
@@ -120,7 +151,10 @@ class ReportController extends Controller
         } elseif ($periodType === 'tahunan') {
             $years = range(Carbon::now()->year - 3, Carbon::now()->year + 1);
             foreach ($years as $yr) {
-                $masuk = Booking::whereYear('tanggal_berangkat', $yr)->sum('tarif');
+                $masukB = Booking::whereYear('tanggal_berangkat', $yr)->sum('tarif');
+                $masukS = \App\Models\Schedule::whereYear('tanggal_keberangkatan', $yr)->sum('tarif');
+                $masuk = $masukB + $masukS;
+
                 $keluarOps = Expense::whereYear('tanggal', $yr)->sum('jumlah');
                 $keluarSrv = Maintenance::whereYear('tanggal_perawatan', $yr)->sum('biaya');
                 $totalKeluar = $keluarOps + $keluarSrv;
@@ -138,6 +172,7 @@ class ReportController extends Controller
         } else {
             $allDates = collect()
                 ->merge($allBookings->pluck('tanggal_berangkat')->map->format('Y-m-d'))
+                ->merge($allSchedules->pluck('tanggal_keberangkatan')->map->format('Y-m-d'))
                 ->merge($allExpenses->pluck('tanggal')->map->format('Y-m-d'))
                 ->merge($allMaintenances->pluck('tanggal_perawatan')->map->format('Y-m-d'))
                 ->unique()
@@ -146,7 +181,10 @@ class ReportController extends Controller
 
             foreach ($allDates as $dateStr) {
                 $cDate = Carbon::parse($dateStr);
-                $masuk = $allBookings->filter(fn($b) => $b->tanggal_berangkat->format('Y-m-d') === $dateStr)->sum('tarif');
+                $masukB = $allBookings->filter(fn($b) => $b->tanggal_berangkat->format('Y-m-d') === $dateStr)->sum('tarif');
+                $masukS = $allSchedules->filter(fn($s) => $s->tanggal_keberangkatan->format('Y-m-d') === $dateStr)->sum('tarif');
+                $masuk = $masukB + $masukS;
+
                 $keluarOps = $allExpenses->filter(fn($e) => $e->tanggal->format('Y-m-d') === $dateStr)->sum('jumlah');
                 $keluarSrv = $allMaintenances->filter(fn($m) => $m->tanggal_perawatan->format('Y-m-d') === $dateStr)->sum('biaya');
                 $totalKeluar = $keluarOps + $keluarSrv;
@@ -163,6 +201,17 @@ class ReportController extends Controller
             }
         }
 
+        // Map cashflowData to summaryData format for blade view compatibility
+        $summaryData = array_map(function ($item) {
+            return [
+                'label' => $item['label'],
+                'dana_masuk' => $item['dana_masuk'],
+                'pengeluaran_ops' => $item['dana_keluar_ops'],
+                'biaya_maintenance' => $item['dana_keluar_srv'],
+                'saldo' => $item['saldo'],
+            ];
+        }, $cashflowData);
+
         return view('reports.index', compact(
             'periodType',
             'selectedYear',
@@ -178,9 +227,112 @@ class ReportController extends Controller
             'labaRugiSederhana',
             'expensesByCategory',
             'cashflowData',
+            'summaryData',
             'detailDanaMasuk',
             'detailDanaKeluarOps',
             'detailDanaKeluarSrv'
+        ));
+    }
+
+    /**
+     * Dedicated Laporan Pengeluaran (Expense Analytics & Report)
+     */
+    public function expensesReport(Request $request)
+    {
+        if (!auth()->user() || !auth()->user()->isOwner()) {
+            return redirect()->route('dashboard')->with('error', 'Akses Ditolak! Fitur Laporan Pengeluaran hanya dapat diakses oleh Owner.');
+        }
+
+        $periodType = $request->input('period_type', 'semua'); // semua, harian, bulanan, tahunan
+        $selectedYear = (int) $request->input('year', Carbon::now()->year);
+        $startDate = $request->input('start_date', Carbon::now()->startOfMonth()->toDateString());
+        $endDate = $request->input('end_date', Carbon::now()->endOfMonth()->toDateString());
+        $selectedCategory = $request->input('kategori');
+        $selectedVehicleId = $request->input('vehicle_id');
+
+        $vehicles = Vehicle::all();
+
+        // Build Expenses Query
+        $expensesQuery = Expense::with(['schedule.vehicle', 'schedule.driver']);
+
+        if ($selectedVehicleId) {
+            $expensesQuery->whereHas('schedule', function ($q) use ($selectedVehicleId) {
+                $q->where('vehicle_id', $selectedVehicleId);
+            });
+        }
+
+        if ($selectedCategory) {
+            $expensesQuery->where('kategori', $selectedCategory);
+        }
+
+        if ($periodType === 'harian') {
+            $expensesQuery->whereBetween('tanggal', [$startDate, $endDate]);
+        } elseif ($periodType === 'bulanan') {
+            $expensesQuery->whereYear('tanggal', $selectedYear);
+        }
+
+        $expenses = $expensesQuery->latest('tanggal')->get();
+
+        // Build Maintenance Query
+        $maintenancesQuery = Maintenance::with('vehicle');
+        if ($selectedVehicleId) {
+            $maintenancesQuery->where('vehicle_id', $selectedVehicleId);
+        }
+        if ($periodType === 'harian') {
+            $maintenancesQuery->whereBetween('tanggal_perawatan', [$startDate, $endDate]);
+        } elseif ($periodType === 'bulanan') {
+            $maintenancesQuery->whereYear('tanggal_perawatan', $selectedYear);
+        }
+        $maintenances = $maintenancesQuery->latest('tanggal_perawatan')->get();
+
+        // Total Aggregates
+        $totalPengeluaranOps = $expenses->sum('jumlah');
+        $totalBiayaBengkel = $maintenances->sum('biaya');
+        $totalSemuaPengeluaran = $totalPengeluaranOps + ($selectedCategory && $selectedCategory !== 'Servis kendaraan' ? 0 : $totalBiayaBengkel);
+
+        // Category Totals
+        $totalBBM = $expenses->where('kategori', 'BBM')->sum('jumlah');
+        $totalTol = $expenses->where('kategori', 'Tol')->sum('jumlah');
+        $totalParkir = $expenses->where('kategori', 'Parkir')->sum('jumlah');
+        $totalServisOps = $expenses->where('kategori', 'Servis kendaraan')->sum('jumlah') + $totalBiayaBengkel;
+        $totalLainnya = $expenses->where('kategori', 'Lainnya')->sum('jumlah');
+
+        // Breakdown per Vehicle Armada
+        $expensesByVehicle = [];
+        foreach ($vehicles as $v) {
+            $vOps = $expenses->filter(fn($e) => $e->schedule && $e->schedule->vehicle_id == $v->id)->sum('jumlah');
+            $vSrv = $maintenances->filter(fn($m) => $m->vehicle_id == $v->id)->sum('biaya');
+            $vTotal = $vOps + $vSrv;
+            if ($vTotal > 0) {
+                $expensesByVehicle[] = [
+                    'vehicle' => $v,
+                    'ops' => $vOps,
+                    'servis' => $vSrv,
+                    'total' => $vTotal,
+                ];
+            }
+        }
+        usort($expensesByVehicle, fn($a, $b) => $b['total'] <=> $a['total']);
+
+        return view('reports.expenses', compact(
+            'periodType',
+            'selectedYear',
+            'startDate',
+            'endDate',
+            'selectedCategory',
+            'selectedVehicleId',
+            'vehicles',
+            'expenses',
+            'maintenances',
+            'totalPengeluaranOps',
+            'totalBiayaBengkel',
+            'totalSemuaPengeluaran',
+            'totalBBM',
+            'totalTol',
+            'totalParkir',
+            'totalServisOps',
+            'totalLainnya',
+            'expensesByVehicle'
         ));
     }
 }

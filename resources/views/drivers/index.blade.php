@@ -12,23 +12,23 @@
         <!-- Top Welcome Banner & Upload Trigger -->
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
-                <h2 class="text-xl font-display font-bold text-white">Kartu Lisensi & Profil Pengemudi</h2>
-                <p class="text-xs text-slate-400">Lisensi Pengemudi TravelManager, verifikasi KTP/SIM, serta riwayat penugasan armada Anda.</p>
+                <h2 class="text-xl md:text-2xl font-display font-black text-white tracking-wide">Kartu Lisensi & Profil Pengemudi</h2>
+                <p class="text-xs text-slate-400 mt-0.5">Lisensi Pengemudi TravelManager, verifikasi KTP/SIM, serta riwayat penugasan armada Anda.</p>
             </div>
-            <button onclick="openSupirProfileModal()" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs flex items-center gap-2 shadow-lg shadow-amber-600/20 transition-all">
-                <span class="material-symbols-outlined text-sm">edit</span>
+            <button onclick="openSupirProfileModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-amber-600/20 transition-all self-start sm:self-auto">
+                <span class="material-symbols-outlined text-base">edit</span>
                 Edit Profil & Ganti Password / Upload KTP & SIM
             </button>
         </div>
 
         <!-- Catatan Verifikasi Jika Ditolak -->
         @if(($myDriverRecord->status_verifikasi ?? '') === 'Ditolak' && !empty($myDriverRecord->catatan_verifikasi))
-        <div class="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-3">
-            <span class="material-symbols-outlined text-rose-400">warning</span>
+        <div class="p-4 rounded-3xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs flex items-start gap-3 shadow-xl">
+            <span class="material-symbols-outlined text-rose-400 text-xl">warning</span>
             <div>
-                <strong class="font-bold text-rose-400 block mb-0.5">Dokumen KTP/SIM Ditolak oleh Owner!</strong>
-                <p class="text-[11px] text-slate-300">Catatan Owner: {{ $myDriverRecord->catatan_verifikasi }}</p>
-                <p class="text-[10px] text-rose-400 mt-1 font-semibold">Silakan klik tombol "Edit Profil & Upload KTP / SIM" untuk mengunggah ulang foto dokumen yang jelas.</p>
+                <strong class="font-bold text-rose-400 block mb-0.5 text-sm">Dokumen KTP/SIM Ditolak oleh Owner!</strong>
+                <p class="text-xs text-slate-300">Catatan Owner: {{ $myDriverRecord->catatan_verifikasi }}</p>
+                <p class="text-[11px] text-rose-400 mt-1 font-semibold">Silakan klik tombol "Edit Profil & Upload KTP / SIM" untuk mengunggah ulang foto dokumen yang jelas.</p>
             </div>
         </div>
         @endif
@@ -37,7 +37,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
             <!-- Col 1: Kartu ID Digital Driver (Metallic Glass ID Pass) -->
-            <div class="glass-card p-6 rounded-3xl border border-amber-500/30 relative overflow-hidden flex flex-col justify-between space-y-6">
+            <div class="glass-card p-6 rounded-3xl border border-amber-500/30 relative overflow-hidden flex flex-col justify-between space-y-6 shadow-2xl">
                 <!-- Background Accent Glow -->
                 <div class="absolute -right-12 -top-12 w-36 h-36 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
@@ -48,7 +48,7 @@
                             <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs border border-amber-500/30">
                                 TM
                             </div>
-                            <span class="font-display font-bold text-sm text-white tracking-wide">TRAVEL MANAGER PASS</span>
+                            <span class="font-display font-extrabold text-sm text-white tracking-wider">TRAVEL MANAGER PASS</span>
                         </div>
                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
                             {{ ($myDriverRecord->status_verifikasi ?? '') === 'Terverifikasi' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : (($myDriverRecord->status_verifikasi ?? '') === 'Menunggu Verifikasi' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse' : 'bg-slate-800 text-slate-400') }}">
@@ -61,33 +61,33 @@
                         @if(!empty($myDriverRecord->foto_profil))
                             <img src="{{ asset('storage/' . $myDriverRecord->foto_profil) }}" alt="Foto Profil" class="w-16 h-16 rounded-2xl object-cover border-2 border-amber-500 shadow-xl shrink-0">
                         @else
-                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-white font-extrabold text-2xl shadow-xl shadow-amber-500/20 border-2 border-slate-800 shrink-0">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-white font-black text-2xl shadow-xl shadow-amber-500/20 border-2 border-slate-800 shrink-0">
                                 {{ strtoupper(substr($myDriverRecord->nama ?? auth()->user()->name, 0, 2)) }}
                             </div>
                         @endif
                         <div class="overflow-hidden">
                             <h3 class="font-display font-bold text-lg text-white truncate">{{ $myDriverRecord->nama ?? auth()->user()->name }}</h3>
-                            <p class="text-xs text-amber-400 font-semibold font-mono">ID: DRV-{{ str_pad($myDriverRecord->id ?? 1, 4, '0', STR_PAD_LEFT) }}</p>
-                            <p class="text-[11px] text-slate-400 truncate">Login HP: {{ $myDriverRecord->nomor_hp ?? auth()->user()->no_hp ?? '-' }}</p>
+                            <p class="text-xs text-amber-400 font-bold font-mono">ID: DRV-{{ str_pad($myDriverRecord->id ?? 1, 4, '0', STR_PAD_LEFT) }}</p>
+                            <p class="text-[11px] text-slate-400 truncate font-mono">Login HP: {{ $myDriverRecord->nomor_hp ?? auth()->user()->no_hp ?? '-' }}</p>
                         </div>
                     </div>
 
                     <!-- SIM & Kontak Grid Info -->
                     <div class="space-y-3 pt-2">
-                        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
                             <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-sm text-amber-400">badge</span> Lisensi SIM:
                             </span>
-                            <span class="font-mono font-bold text-white text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700">
+                            <span class="font-mono font-bold text-white text-xs bg-slate-950 px-2.5 py-1 rounded-xl border border-slate-800">
                                 {{ $myDriverRecord->nomor_sim ?? 'SIM-A-982145' }}
                             </span>
                         </div>
 
-                        <div class="p-3 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
+                        <div class="p-3 rounded-2xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
                             <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
                                 <span class="material-symbols-outlined text-sm text-sky-400">call</span> Nomor HP Login:
                             </span>
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $myDriverRecord->nomor_hp ?? '') }}" target="_blank" class="font-semibold text-sky-400 hover:underline text-xs flex items-center gap-1">
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $myDriverRecord->nomor_hp ?? '') }}" target="_blank" class="font-semibold text-sky-400 hover:underline text-xs flex items-center gap-1 font-mono">
                                 {{ $myDriverRecord->nomor_hp ?? '-' }}
                                 <span class="material-symbols-outlined text-xs">open_in_new</span>
                             </a>
@@ -98,45 +98,45 @@
                     <div class="space-y-2 pt-2 border-t border-slate-800">
                         <p class="text-xs font-semibold text-slate-300 flex items-center justify-between">
                             <span class="flex items-center gap-1"><span class="material-symbols-outlined text-sm text-amber-400">folder_shared</span> Dokumen KTP & SIM:</span>
-                            <span class="text-[10px] text-amber-400">{{ $myDriverRecord->status_verifikasi ?? 'Belum Upload' }}</span>
+                            <span class="text-[10px] text-amber-400 font-bold">{{ $myDriverRecord->status_verifikasi ?? 'Belum Upload' }}</span>
                         </p>
                         <div class="grid grid-cols-2 gap-2">
                             <!-- KTP Preview Card -->
-                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-center space-y-1.5">
-                                <span class="text-[10px] text-slate-400 font-semibold block">Foto Dokumen KTP</span>
+                            <div class="p-2.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-center space-y-1.5">
+                                <span class="text-[10px] text-slate-400 font-semibold block">Dokumen KTP</span>
                                 @if(!empty($myDriverRecord->foto_ktp))
-                                    <a href="{{ asset('storage/' . $myDriverRecord->foto_ktp) }}" target="_blank" class="block group relative overflow-hidden rounded-lg border border-slate-700">
+                                    <a href="{{ asset('storage/' . $myDriverRecord->foto_ktp) }}" target="_blank" class="block group relative overflow-hidden rounded-xl border border-slate-700">
                                         <img src="{{ asset('storage/' . $myDriverRecord->foto_ktp) }}" class="w-full h-20 object-cover group-hover:scale-105 transition-transform">
                                         <div class="absolute inset-0 bg-slate-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                             <span class="text-[10px] text-sky-400 font-bold flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-xs">zoom_in</span> Lihat KTP
+                                                <span class="material-symbols-outlined text-xs">zoom_in</span> Lihat
                                             </span>
                                         </div>
                                     </a>
                                 @else
-                                    <div onclick="openSupirProfileModal()" class="h-20 rounded-lg bg-slate-950/50 border border-dashed border-slate-700 flex flex-col items-center justify-center text-[10px] text-slate-500 hover:border-amber-500/50 cursor-pointer">
+                                    <div onclick="openSupirProfileModal()" class="h-20 rounded-xl bg-slate-950/50 border border-dashed border-slate-700 flex flex-col items-center justify-center text-[10px] text-slate-500 hover:border-amber-500/50 cursor-pointer">
                                         <span class="material-symbols-outlined text-sm text-amber-400">upload</span>
-                                        Klik Upload KTP
+                                        Upload KTP
                                     </div>
                                 @endif
                             </div>
 
                             <!-- SIM Preview Card -->
-                            <div class="p-2.5 rounded-xl bg-slate-900/80 border border-slate-800 text-center space-y-1.5">
-                                <span class="text-[10px] text-slate-400 font-semibold block">Foto Dokumen SIM</span>
+                            <div class="p-2.5 rounded-2xl bg-slate-900/80 border border-slate-800 text-center space-y-1.5">
+                                <span class="text-[10px] text-slate-400 font-semibold block">Dokumen SIM</span>
                                 @if(!empty($myDriverRecord->foto_sim))
-                                    <a href="{{ asset('storage/' . $myDriverRecord->foto_sim) }}" target="_blank" class="block group relative overflow-hidden rounded-lg border border-slate-700">
+                                    <a href="{{ asset('storage/' . $myDriverRecord->foto_sim) }}" target="_blank" class="block group relative overflow-hidden rounded-xl border border-slate-700">
                                         <img src="{{ asset('storage/' . $myDriverRecord->foto_sim) }}" class="w-full h-20 object-cover group-hover:scale-105 transition-transform">
                                         <div class="absolute inset-0 bg-slate-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                             <span class="text-[10px] text-amber-400 font-bold flex items-center gap-1">
-                                                <span class="material-symbols-outlined text-xs">zoom_in</span> Lihat SIM
+                                                <span class="material-symbols-outlined text-xs">zoom_in</span> Lihat
                                             </span>
                                         </div>
                                     </a>
                                 @else
-                                    <div onclick="openSupirProfileModal()" class="h-20 rounded-lg bg-slate-950/50 border border-dashed border-slate-700 flex flex-col items-center justify-center text-[10px] text-slate-500 hover:border-amber-500/50 cursor-pointer">
+                                    <div onclick="openSupirProfileModal()" class="h-20 rounded-xl bg-slate-950/50 border border-dashed border-slate-700 flex flex-col items-center justify-center text-[10px] text-slate-500 hover:border-amber-500/50 cursor-pointer">
                                         <span class="material-symbols-outlined text-sm text-amber-400">upload</span>
-                                        Klik Upload SIM
+                                        Upload SIM
                                     </div>
                                 @endif
                             </div>
@@ -162,31 +162,31 @@
 
                 <!-- 2 Metric Mini Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
+                    <div class="glass-panel p-5 rounded-3xl border border-slate-800 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
                             <span class="material-symbols-outlined text-2xl">route</span>
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-medium">Total Perjalanan Sewa</p>
-                            <h4 class="font-display font-extrabold text-xl text-white mt-0.5">{{ $myDriverRecord->schedules_count ?? 0 }} Trip</h4>
+                            <p class="text-xs text-slate-400 font-semibold">Total Perjalanan Sewa</p>
+                            <h4 class="font-display font-black text-2xl text-white mt-0.5">{{ $myDriverRecord->schedules_count ?? 0 }} Trip</h4>
                         </div>
                     </div>
 
-                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center border border-sky-500/20">
+                    <div class="glass-panel p-5 rounded-3xl border border-slate-800 flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-sky-500/10 text-sky-400 flex items-center justify-center border border-sky-500/20">
                             <span class="material-symbols-outlined text-2xl">confirmation_number</span>
                         </div>
                         <div>
-                            <p class="text-xs text-slate-400 font-medium">Total Booking Terhubung</p>
-                            <h4 class="font-display font-extrabold text-xl text-white mt-0.5">{{ $myDriverRecord->bookings_count ?? 0 }} Reservasi</h4>
+                            <p class="text-xs text-slate-400 font-semibold">Total Booking Terhubung</p>
+                            <h4 class="font-display font-black text-2xl text-white mt-0.5">{{ $myDriverRecord->bookings_count ?? 0 }} Reservasi</h4>
                         </div>
                     </div>
                 </div>
 
                 <!-- Riwayat Penugasan Terbaru -->
-                <div class="glass-panel rounded-2xl p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2">
+                <div class="glass-panel rounded-3xl p-6 border border-slate-800">
+                    <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-800">
+                        <div class="flex items-center gap-2.5">
                             <span class="material-symbols-outlined text-amber-400">history</span>
                             <h3 class="font-display font-bold text-white text-base">Riwayat Tugas Perjalanan Terbaru</h3>
                         </div>
@@ -207,18 +207,18 @@
                             </thead>
                             <tbody class="divide-y divide-slate-800/60">
                                 @forelse($mySchedulesHistory as $sch)
-                                <tr>
-                                    <td class="py-3 whitespace-nowrap">
+                                <tr class="hover:bg-slate-900/40 transition-colors">
+                                    <td class="py-3.5 whitespace-nowrap">
                                         <span class="font-bold text-white block">{{ $sch->tanggal_keberangkatan->format('d M Y, H:i') }} WIB</span>
                                     </td>
-                                    <td class="py-3">
+                                    <td class="py-3.5">
                                         <span class="font-semibold text-white block">{{ $sch->vehicle->plat_nomor ?? '-' }}</span>
                                         <span class="text-[11px] text-slate-400">{{ $sch->vehicle->merk ?? '' }}</span>
                                     </td>
-                                    <td class="py-3 text-slate-200 font-medium">
+                                    <td class="py-3.5 text-slate-200 font-medium">
                                         {{ $sch->rute }}
                                     </td>
-                                    <td class="py-3 text-right whitespace-nowrap">
+                                    <td class="py-3.5 text-right whitespace-nowrap">
                                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
                                             {{ $sch->status_perjalanan === 'Selesai' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : ($sch->status_perjalanan === 'Dalam Perjalanan' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse' : 'bg-sky-500/10 text-sky-400 border border-sky-500/20') }}">
                                             {{ $sch->status_perjalanan }}
@@ -227,7 +227,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="py-6 text-center text-slate-500">Belum ada riwayat perjalanan.</td>
+                                    <td colspan="4" class="py-8 text-center text-slate-500">Belum ada riwayat perjalanan.</td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -242,8 +242,8 @@
     </div>
 
     <!-- Modal Edit Profil Khusus Supir -->
-    <div id="supirProfileModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-lg rounded-2xl p-6 shadow-2xl border border-amber-500/30 max-h-[90vh] overflow-y-auto">
+    <div id="supirProfileModal" onclick="if(event.target === this) closeSupirProfileModal()" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-500/30 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-4 border-b border-slate-800">
                 <h3 class="font-display font-bold text-lg text-white">Edit Profil & Upload KTP / SIM</h3>
                 <button onclick="closeSupirProfileModal()" class="text-slate-400 hover:text-white">
@@ -256,35 +256,35 @@
                 @method('PUT')
 
                 <div>
-                    <label class="block font-medium text-slate-300 mb-1">Nama Lengkap Driver</label>
-                    <input type="text" name="nama" value="{{ old('nama', $myDriverRecord->nama ?? auth()->user()->name) }}" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
+                    <label class="block font-semibold text-slate-300 mb-1.5">Nama Lengkap Driver</label>
+                    <input type="text" name="nama" value="{{ old('nama', $myDriverRecord->nama ?? auth()->user()->name) }}" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
                 </div>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block font-medium text-slate-300 mb-1">Nomor WhatsApp / HP (Username Login)</label>
-                        <input type="text" name="nomor_hp" value="{{ old('nomor_hp', $myDriverRecord->nomor_hp ?? '') }}" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
+                        <label class="block font-semibold text-slate-300 mb-1.5">Nomor WhatsApp / HP (Username Login)</label>
+                        <input type="text" name="nomor_hp" value="{{ old('nomor_hp', $myDriverRecord->nomor_hp ?? '') }}" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-mono focus:outline-none focus:border-amber-500">
                     </div>
 
                     <div>
-                        <label class="block font-medium text-slate-300 mb-1">Nomor SIM Driver</label>
-                        <input type="text" name="nomor_sim" value="{{ old('nomor_sim', $myDriverRecord->nomor_sim ?? '') }}" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
+                        <label class="block font-semibold text-slate-300 mb-1.5">Nomor SIM Driver</label>
+                        <input type="text" name="nomor_sim" value="{{ old('nomor_sim', $myDriverRecord->nomor_sim ?? '') }}" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white font-mono focus:outline-none focus:border-amber-500">
                     </div>
                 </div>
 
                 <!-- Section Ganti Password Mandiri Supir -->
-                <div class="p-3.5 rounded-xl bg-slate-900/90 border border-amber-500/30 space-y-3">
-                    <p class="text-xs font-semibold text-amber-400 flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">lock_reset</span> Ganti Kata Sandi Akun (Password)
+                <div class="p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 space-y-3">
+                    <p class="text-xs font-bold text-amber-400 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-base">lock_reset</span> Ganti Kata Sandi Akun (Password)
                     </p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <label class="block font-medium text-slate-300 mb-1">Password Baru</label>
+                            <label class="block font-semibold text-slate-300 mb-1">Password Baru</label>
                             <input type="password" name="password" placeholder="Minimal 4 Karakter" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
                         </div>
                         <div>
-                            <label class="block font-medium text-slate-300 mb-1">Konfirmasi Password Baru</label>
-                            <input type="password" name="password_confirmation" placeholder="Ulangi Password Baru" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
+                            <label class="block font-semibold text-slate-300 mb-1">Konfirmasi Password</label>
+                            <input type="password" name="password_confirmation" placeholder="Ulangi Password" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
                         </div>
                     </div>
                     <p class="text-[10px] text-slate-400 italic">* Kosongkan password jika Anda tidak ingin mengubah kata sandi akun.</p>
@@ -292,24 +292,24 @@
 
                 <div class="space-y-3 pt-2 border-t border-slate-800">
                     <div>
-                        <label class="block font-medium text-slate-300 mb-1">Upload Foto Profil Avatar (Opsional)</label>
-                        <input type="file" name="foto_profil" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-600/20 file:text-amber-400 hover:file:bg-amber-600/30">
+                        <label class="block font-semibold text-slate-300 mb-1.5">Upload Foto Profil Avatar (Opsional)</label>
+                        <input type="file" name="foto_profil" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-amber-600/20 file:text-amber-400 hover:file:bg-amber-600/30">
                     </div>
 
                     <div>
-                        <label class="block font-medium text-slate-300 mb-1">Upload Foto Dokumen KTP (Kartu Tanda Penduduk)</label>
-                        <input type="file" name="foto_ktp" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-sky-600/20 file:text-sky-400 hover:file:bg-sky-600/30">
+                        <label class="block font-semibold text-slate-300 mb-1.5">Upload Foto Dokumen KTP</label>
+                        <input type="file" name="foto_ktp" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-sky-600/20 file:text-sky-400 hover:file:bg-sky-600/30">
                     </div>
 
                     <div>
-                        <label class="block font-medium text-slate-300 mb-1">Upload Foto Dokumen SIM (Surat Izin Mengemudi)</label>
-                        <input type="file" name="foto_sim" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600/20 file:text-emerald-400 hover:file:bg-emerald-600/30">
+                        <label class="block font-semibold text-slate-300 mb-1.5">Upload Foto Dokumen SIM</label>
+                        <input type="file" name="foto_sim" accept="image/*" class="w-full text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-emerald-600/20 file:text-emerald-400 hover:file:bg-emerald-600/30">
                     </div>
                 </div>
 
                 <div class="pt-4 border-t border-slate-800 flex justify-end gap-2">
-                    <button type="button" onclick="closeSupirProfileModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700">Batal</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-amber-600 text-white font-semibold hover:bg-amber-500 shadow-lg shadow-amber-600/20">Simpan Perubahan & Berkas</button>
+                    <button type="button" onclick="closeSupirProfileModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700">Batal</button>
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold hover:from-amber-500 hover:to-orange-500 shadow-lg shadow-amber-600/20">Simpan Perubahan & Berkas</button>
                 </div>
             </form>
         </div>
@@ -317,66 +317,66 @@
 
 @else
     <!-- ==================== TAMPILAN KELOLA DRIVER KHUSUS OWNER ==================== -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-            <h2 class="text-xl font-display font-bold text-white">Manajemen Driver & Password Akun</h2>
-            <p class="text-xs text-slate-400">Kelola data pengemudi, lihat Nomor HP & Password login driver, serta lakukan verifikasi dokumen KTP & SIM.</p>
+            <h2 class="text-xl md:text-2xl font-display font-black text-white tracking-wide">Manajemen Driver & Password Akun</h2>
+            <p class="text-xs text-slate-400 mt-0.5">Kelola data pengemudi, lihat Nomor HP & Password login driver, serta lakukan verifikasi dokumen KTP & SIM.</p>
         </div>
-        <button onclick="openCreateModal()" class="px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-xs flex items-center gap-2 shadow-lg shadow-sky-600/20 transition-all">
-            <span class="material-symbols-outlined text-sm">person_add</span>
+        <button onclick="openCreateModal()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold text-xs flex items-center gap-2 shadow-lg shadow-sky-600/30 transition-all self-start md:self-auto">
+            <span class="material-symbols-outlined text-base">person_add</span>
             Tambah Sopir Baru
         </button>
     </div>
 
     <!-- Drivers Table View -->
-    <div class="glass-panel rounded-2xl p-6 mt-6">
+    <div class="glass-panel rounded-3xl p-4 sm:p-6 mt-6 border border-slate-800">
         <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <table class="w-full text-left text-xs min-w-[700px]">
                 <thead>
-                    <tr class="text-slate-400 border-b border-slate-800">
-                        <th class="pb-3 font-semibold">Nama Driver</th>
-                        <th class="pb-3 font-semibold text-sky-400">Kredensial Login (No HP & Kata Sandi)</th>
-                        <th class="pb-3 font-semibold">Dokumen KTP & SIM</th>
-                        <th class="pb-3 font-semibold">Status Verifikasi</th>
-                        <th class="pb-3 font-semibold text-right">Aksi & Verifikasi</th>
+                    <tr class="text-slate-400 border-b border-slate-800/80">
+                        <th class="pb-3.5 font-semibold">Nama Driver</th>
+                        <th class="pb-3.5 font-semibold text-sky-400">Kredensial Login (No HP & Password)</th>
+                        <th class="pb-3.5 font-semibold">Dokumen KTP & SIM</th>
+                        <th class="pb-3.5 font-semibold">Status Verifikasi</th>
+                        <th class="pb-3.5 font-semibold text-right">Aksi & Verifikasi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-800/60">
                     @forelse($drivers as $driver)
-                    <tr>
-                        <td class="py-3.5">
+                    <tr class="hover:bg-slate-900/40 transition-colors">
+                        <td class="py-4">
                             <div class="flex items-center gap-3">
                                 @if(!empty($driver->foto_profil))
-                                    <img src="{{ asset('storage/' . $driver->foto_profil) }}" class="w-9 h-9 rounded-full object-cover border border-slate-700">
+                                    <img src="{{ asset('storage/' . $driver->foto_profil) }}" class="w-10 h-10 rounded-2xl object-cover border border-amber-500/40 shadow-md">
                                 @else
-                                    <div class="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-sky-400 font-bold border border-slate-700">
+                                    <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm border border-slate-700 shadow-md">
                                         {{ strtoupper(substr($driver->nama, 0, 1)) }}
                                     </div>
                                 @endif
                                 <div>
-                                    <span class="font-semibold text-white block">{{ $driver->nama }}</span>
-                                    <span class="text-[11px] text-slate-400">SIM: {{ $driver->nomor_sim }}</span>
+                                    <span class="font-bold text-white block text-xs">{{ $driver->nama }}</span>
+                                    <span class="text-[11px] text-slate-400 font-mono">SIM: {{ $driver->nomor_sim }}</span>
                                 </div>
                             </div>
                         </td>
-                        <td class="py-3.5 text-slate-200">
+                        <td class="py-4 text-slate-200">
                             <div class="space-y-1">
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $driver->nomor_hp) }}" target="_blank" class="flex items-center gap-1 text-sky-400 hover:underline font-bold">
-                                    <span class="material-symbols-outlined text-xs">call</span> HP: {{ $driver->nomor_hp }}
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $driver->nomor_hp) }}" target="_blank" class="flex items-center gap-1 text-sky-400 hover:underline font-bold font-mono">
+                                    <span class="material-symbols-outlined text-xs">call</span> {{ $driver->nomor_hp }}
                                 </a>
                                 <div class="flex items-center gap-1.5 text-[11px]">
                                     <span class="material-symbols-outlined text-xs text-amber-400">key</span>
                                     <span class="text-slate-400">Password:</span>
-                                    <span class="px-2 py-0.5 rounded bg-slate-800 text-amber-400 font-mono font-bold border border-slate-700">
+                                    <span class="px-2 py-0.5 rounded-lg bg-slate-900 text-amber-400 font-mono font-bold border border-slate-800">
                                         {{ $driver->user->password_hint ?? 'password' }}
                                     </span>
                                 </div>
                             </div>
                         </td>
-                        <td class="py-3.5">
+                        <td class="py-4">
                             <div class="flex items-center gap-1.5">
                                 @if($driver->foto_ktp)
-                                    <a href="{{ asset('storage/' . $driver->foto_ktp) }}" target="_blank" class="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[10px] font-semibold flex items-center gap-0.5 hover:underline">
+                                    <a href="{{ asset('storage/' . $driver->foto_ktp) }}" target="_blank" class="px-2.5 py-1 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[10px] font-bold flex items-center gap-1 hover:underline">
                                         <span class="material-symbols-outlined text-xs">id_card</span> KTP
                                     </a>
                                 @else
@@ -384,7 +384,7 @@
                                 @endif
 
                                 @if($driver->foto_sim)
-                                    <a href="{{ asset('storage/' . $driver->foto_sim) }}" target="_blank" class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-semibold flex items-center gap-0.5 hover:underline">
+                                    <a href="{{ asset('storage/' . $driver->foto_sim) }}" target="_blank" class="px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] font-bold flex items-center gap-1 hover:underline">
                                         <span class="material-symbols-outlined text-xs">badge</span> SIM
                                     </a>
                                 @else
@@ -392,24 +392,24 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="py-3.5">
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold
+                        <td class="py-4">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase
                                 {{ $driver->status_verifikasi === 'Terverifikasi' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : ($driver->status_verifikasi === 'Menunggu Verifikasi' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse' : ($driver->status_verifikasi === 'Ditolak' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700')) }}">
                                 {{ $driver->status_verifikasi }}
                             </span>
                         </td>
-                        <td class="py-3.5 text-right whitespace-nowrap">
+                        <td class="py-4 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-2">
-                                <button onclick='openVerifyModal(@json($driver))' class="px-2.5 py-1.5 rounded-lg bg-amber-600/20 hover:bg-amber-600/30 text-amber-400 font-semibold text-xs transition-all flex items-center gap-1 border border-amber-500/30">
-                                    <span class="material-symbols-outlined text-sm">fact_check</span> Verifikasi Berkas
+                                <button onclick='openVerifyModal(@json($driver))' class="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 font-bold text-xs transition-all flex items-center gap-1 border border-amber-500/20">
+                                    <span class="material-symbols-outlined text-sm">fact_check</span> Verifikasi
                                 </button>
-                                <button onclick='openEditModal(@json($driver))' class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all flex items-center gap-1">
+                                <button onclick='openEditModal(@json($driver))' class="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-800 transition-all flex items-center gap-1" title="Edit Driver">
                                     <span class="material-symbols-outlined text-sm">edit</span>
                                 </button>
                                 <form action="{{ route('drivers.destroy', $driver->id) }}" method="POST" onsubmit="return confirmDelete(this, 'driver {{ $driver->nama }}');">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 transition-all flex items-center gap-1">
+                                    <button type="submit" class="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 transition-all flex items-center gap-1" title="Hapus Driver">
                                         <span class="material-symbols-outlined text-sm">delete</span>
                                     </button>
                                 </form>
@@ -418,7 +418,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="py-8 text-center text-slate-500">Belum ada data driver terdaftar.</td>
+                        <td colspan="5" class="py-10 text-center text-slate-500 font-medium">Belum ada data driver terdaftar.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -427,12 +427,12 @@
     </div>
 
     <!-- Modal Owner Verifikasi Berkas KTP & SIM -->
-    <div id="verifyModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-xl rounded-2xl p-6 shadow-2xl border border-amber-500/30 max-h-[90vh] overflow-y-auto">
+    <div id="verifyModal" onclick="if(event.target === this) closeVerifyModal()" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-panel w-full max-w-xl rounded-3xl p-5 sm:p-6 shadow-2xl border border-amber-500/30 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-4 border-b border-slate-800">
                 <div>
                     <h3 class="font-display font-bold text-lg text-white">Verifikasi Dokumen KTP & SIM</h3>
-                    <p id="verifyDriverName" class="text-xs text-amber-400 font-medium"></p>
+                    <p id="verifyDriverName" class="text-xs text-amber-400 font-medium mt-0.5"></p>
                 </div>
                 <button onclick="closeVerifyModal()" class="text-slate-400 hover:text-white">
                     <span class="material-symbols-outlined">close</span>
@@ -443,15 +443,15 @@
             <div class="mt-4 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1 text-center">
-                        <span class="text-xs font-semibold text-slate-300 block">Dokumen KTP</span>
-                        <div id="verifyKtpPreview" class="h-44 rounded-xl bg-slate-900 border border-slate-800 overflow-hidden flex items-center justify-center">
+                        <span class="text-xs font-semibold text-slate-300 block mb-1">Dokumen KTP</span>
+                        <div id="verifyKtpPreview" class="h-44 rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden flex items-center justify-center">
                             <span class="text-xs text-slate-500">KTP Belum Diunggah</span>
                         </div>
                     </div>
 
                     <div class="space-y-1 text-center">
-                        <span class="text-xs font-semibold text-slate-300 block">Dokumen SIM</span>
-                        <div id="verifySimPreview" class="h-44 rounded-xl bg-slate-900 border border-slate-800 overflow-hidden flex items-center justify-center">
+                        <span class="text-xs font-semibold text-slate-300 block mb-1">Dokumen SIM</span>
+                        <div id="verifySimPreview" class="h-44 rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden flex items-center justify-center">
                             <span class="text-xs text-slate-500">SIM Belum Diunggah</span>
                         </div>
                     </div>
@@ -460,21 +460,21 @@
                 <form id="verifyForm" method="POST" action="" class="space-y-4 text-xs pt-4 border-t border-slate-800">
                     @csrf
                     <div>
-                        <label class="block font-medium text-slate-300 mb-1">Keputusan Owner</label>
-                        <select id="status_verifikasi" name="status_verifikasi" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500 font-semibold">
+                        <label class="block font-semibold text-slate-300 mb-1.5">Keputusan Owner</label>
+                        <select id="status_verifikasi" name="status_verifikasi" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500 font-semibold">
                             <option value="Terverifikasi">✔ Setujui / Terverifikasi (Berkas Valid)</option>
                             <option value="Ditolak">✖ Tolak Berkas (Instruksikan Upload Ulang)</option>
                         </select>
                     </div>
 
                     <div>
-                        <label class="block font-medium text-slate-300 mb-1">Catatan Owner (Opsional)</label>
-                        <textarea id="catatan_verifikasi" name="catatan_verifikasi" rows="3" placeholder="Contoh: Foto SIM kurang jelas, mohon foto ulang dengan pencahayaan terang." class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500"></textarea>
+                        <label class="block font-semibold text-slate-300 mb-1.5">Catatan Owner (Opsional)</label>
+                        <textarea id="catatan_verifikasi" name="catatan_verifikasi" rows="3" placeholder="Contoh: Foto SIM kurang jelas, mohon foto ulang dengan pencahayaan terang." class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500"></textarea>
                     </div>
 
                     <div class="pt-4 border-t border-slate-800 flex justify-end gap-2">
-                        <button type="button" onclick="closeVerifyModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700">Batal</button>
-                        <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-500 shadow-lg shadow-emerald-600/20">Simpan Verifikasi</button>
+                        <button type="button" onclick="closeVerifyModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700">Batal</button>
+                        <button type="submit" class="px-4 py-2.5 rounded-xl bg-emerald-600 text-white font-bold hover:bg-emerald-500 shadow-lg shadow-emerald-600/20">Simpan Verifikasi</button>
                     </div>
                 </form>
             </div>
@@ -482,8 +482,8 @@
     </div>
 
     <!-- Modal Owner Tambah/Edit Driver -->
-    <div id="driverModal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
-        <div class="glass-panel w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
+    <div id="driverModal" onclick="if(event.target === this) closeModal()" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-3 sm:p-4">
+        <div class="glass-panel w-full max-w-md rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-700 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-4 border-b border-slate-800">
                 <h3 id="modalTitle" class="font-display font-bold text-lg text-white">Tambah Sopir Baru</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-white">
@@ -496,29 +496,29 @@
                 <input type="hidden" id="methodField" name="_method" value="POST">
 
                 <div>
-                    <label class="block font-medium text-slate-300 mb-1">Nama Lengkap Sopir</label>
-                    <input type="text" id="nama" name="nama" placeholder="Bambang Sudrajat" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500">
+                    <label class="block font-semibold text-slate-300 mb-1.5">Nama Lengkap Sopir</label>
+                    <input type="text" id="nama" name="nama" placeholder="Bambang Sudrajat" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500">
                 </div>
 
                 <div>
-                    <label class="block font-medium text-slate-300 mb-1">Nomor WhatsApp / HP (Username Login)</label>
-                    <input type="text" id="nomor_hp" name="nomor_hp" placeholder="081298765432" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500 font-mono">
+                    <label class="block font-semibold text-slate-300 mb-1.5">Nomor WhatsApp / HP (Username Login)</label>
+                    <input type="text" id="nomor_hp" name="nomor_hp" placeholder="081298765432" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500 font-mono">
                 </div>
 
                 <div>
-                    <label class="block font-medium text-slate-300 mb-1">Kata Sandi Login Supir (Password)</label>
-                    <input type="text" id="password" name="password" placeholder="Default: password" class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-amber-400 font-mono focus:outline-none focus:border-sky-500">
+                    <label class="block font-semibold text-slate-300 mb-1.5">Kata Sandi Login Supir (Password)</label>
+                    <input type="text" id="password" name="password" placeholder="Default: password" class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-amber-400 font-mono focus:outline-none focus:border-sky-500">
                     <p class="text-[10px] text-slate-400 mt-1">Kosongkan jika tidak ingin mengubah password akun driver.</p>
                 </div>
 
                 <div>
-                    <label class="block font-medium text-slate-300 mb-1">Nomor SIM Driver</label>
-                    <input type="text" id="nomor_sim" name="nomor_sim" placeholder="SIM-A-982145" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500 font-mono">
+                    <label class="block font-semibold text-slate-300 mb-1.5">Nomor SIM Driver</label>
+                    <input type="text" id="nomor_sim" name="nomor_sim" placeholder="SIM-A-982145" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500 font-mono">
                 </div>
 
                 <div>
-                    <label class="block font-medium text-slate-300 mb-1">Status Aktivitas Driver</label>
-                    <select id="status_aktif" name="status_aktif" required class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500 font-semibold">
+                    <label class="block font-semibold text-slate-300 mb-1.5">Status Aktivitas Driver</label>
+                    <select id="status_aktif" name="status_aktif" required class="w-full px-3.5 py-2.5 rounded-2xl bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-sky-500 font-semibold">
                         <option value="Aktif">Aktif (SIAP / Standby)</option>
                         <option value="Sedang Jalan">Sedang Jalan (Dalam Perjalanan)</option>
                         <option value="Nonaktif">Nonaktif (Istirahat / Libur)</option>
@@ -526,8 +526,8 @@
                 </div>
 
                 <div class="pt-4 border-t border-slate-800 flex justify-end gap-2">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-xl bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700">Batal</button>
-                    <button type="submit" class="px-4 py-2 rounded-xl bg-sky-600 text-white font-semibold hover:bg-sky-500 shadow-lg shadow-sky-600/20">Simpan Driver</button>
+                    <button type="button" onclick="closeModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-semibold hover:bg-slate-700">Batal</button>
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 text-white font-bold hover:from-sky-500 hover:to-indigo-500 shadow-lg shadow-sky-600/30">Simpan Driver</button>
                 </div>
             </form>
         </div>

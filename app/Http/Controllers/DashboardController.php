@@ -20,8 +20,8 @@ class DashboardController extends Controller
 
         // Common Counts & Data
         $allVehicles = Vehicle::all();
-        $totalBookingHariIni = Booking::whereDate('tanggal_berangkat', $today)->count();
-        $totalPendapatanHariIni = Booking::whereDate('tanggal_berangkat', $today)->sum('tarif');
+        $totalBookingHariIni = Schedule::whereDate('tanggal_keberangkatan', $today)->count() + Booking::whereDate('tanggal_berangkat', $today)->count();
+        $totalPendapatanHariIni = Schedule::whereDate('tanggal_keberangkatan', $today)->sum('tarif') + Booking::whereDate('tanggal_berangkat', $today)->sum('tarif');
         
         $totalArmada = Vehicle::count();
         $armadaAktif = Vehicle::whereIn('status', ['Tersedia', 'Beroperasi'])->count();
@@ -38,7 +38,7 @@ class DashboardController extends Controller
             ->get();
 
         $recentBookings = Booking::with('driver')->latest()->take(10)->get();
-        $schedulesToday = Schedule::with(['vehicle', 'driver'])
+        $schedulesToday = Schedule::with(['vehicle', 'driver', 'driver2'])
             ->whereDate('tanggal_keberangkatan', $today)
             ->take(10)
             ->get();
@@ -57,8 +57,11 @@ class DashboardController extends Controller
             }
 
             if ($myDriverRecord) {
-                $mySchedules = Schedule::with(['vehicle', 'bookings'])
-                    ->where('driver_id', $myDriverRecord->id)
+                $mySchedules = Schedule::with(['vehicle', 'bookings', 'driver', 'driver2'])
+                    ->where(function($q) use ($myDriverRecord) {
+                        $q->where('driver_id', $myDriverRecord->id)
+                          ->orWhere('driver_2_id', $myDriverRecord->id);
+                    })
                     ->latest()
                     ->take(10)
                     ->get();

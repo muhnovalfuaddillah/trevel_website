@@ -31,13 +31,14 @@ class VehicleController extends Controller
             'plat_nomor' => 'required|string|max:20|unique:vehicles',
             'merk' => 'required|string|max:255',
             'kapasitas' => 'required|integer|min:1',
-            'tarif_per_hari' => 'required|numeric|min:0',
             'status' => 'required|in:Tersedia,Beroperasi,Servis',
         ]);
 
+        $validated['tarif_per_hari'] = 0;
+
         Vehicle::create($validated);
 
-        return redirect()->route('vehicles.index')->with('success', 'Kendaraan armada & tarif per hari berhasil ditambahkan.');
+        return redirect()->route('vehicles.index')->with('success', 'Kendaraan armada berhasil ditambahkan.');
     }
 
     public function update(Request $request, Vehicle $vehicle)
@@ -46,13 +47,12 @@ class VehicleController extends Controller
             'plat_nomor' => 'required|string|max:20|unique:vehicles,plat_nomor,' . $vehicle->id,
             'merk' => 'required|string|max:255',
             'kapasitas' => 'required|integer|min:1',
-            'tarif_per_hari' => 'required|numeric|min:0',
             'status' => 'required|in:Tersedia,Beroperasi,Servis',
         ]);
 
         $vehicle->update($validated);
 
-        return redirect()->route('vehicles.index')->with('success', 'Data kendaraan & tarif per hari berhasil diperbarui.');
+        return redirect()->route('vehicles.index')->with('success', 'Data kendaraan berhasil diperbarui.');
     }
 
     public function destroy(Vehicle $vehicle)
