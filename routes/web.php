@@ -42,16 +42,19 @@ Route::middleware('auth')->group(function () {
         return redirect()->route('schedules.index');
     })->name('bookings.index');
 
-    // Shared Operations (Jadwal Perjalanan, Maintenance, Expenses & Driver Profile)
+    // Shared Operations (Jadwal Perjalanan, Maintenance, Expenses & Driver Profile & Vehicles Read)
     Route::resource('schedules', ScheduleController::class)->except(['create', 'edit', 'show']);
     Route::resource('maintenances', MaintenanceController::class)->except(['create', 'edit', 'show']);
     Route::resource('expenses', ExpenseController::class)->except(['create', 'edit', 'show']);
+    Route::get('/vehicles', [VehicleController::class, 'index'])->name('vehicles.index');
     Route::get('/drivers', [DriverController::class, 'index'])->name('drivers.index');
     Route::put('/drivers/{driver}', [DriverController::class, 'update'])->name('drivers.update');
 
     // Owner-Only Restricted Management Modules
     Route::middleware('role:owner')->group(function () {
-        Route::resource('vehicles', VehicleController::class)->except(['create', 'edit', 'show']);
+        Route::post('/vehicles', [VehicleController::class, 'store'])->name('vehicles.store');
+        Route::put('/vehicles/{vehicle}', [VehicleController::class, 'update'])->name('vehicles.update');
+        Route::delete('/vehicles/{vehicle}', [VehicleController::class, 'destroy'])->name('vehicles.destroy');
         Route::post('/drivers', [DriverController::class, 'store'])->name('drivers.store');
         Route::delete('/drivers/{driver}', [DriverController::class, 'destroy'])->name('drivers.destroy');
         Route::post('/drivers/{driver}/verify', [DriverController::class, 'verify'])->name('drivers.verify');

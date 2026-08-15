@@ -239,8 +239,7 @@
                     @endif
                 </a>
 
-                @if(auth()->check() && auth()->user()->isOwner())
-                <!-- 2. Data Kendaraan (Owner Only) -->
+                <!-- 2. Data Kendaraan (Both Owner & Supir) -->
                 <a href="{{ route('vehicles.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all {{ request()->is('vehicles*') ? 'bg-gradient-to-r from-sky-500/20 to-indigo-500/10 text-sky-400 border border-sky-500/30 shadow-lg shadow-sky-500/10 font-bold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
                     <div class="flex items-center gap-3">
                         <span class="material-symbols-outlined text-[20px]">directions_car</span>
@@ -251,6 +250,7 @@
                     @endif
                 </a>
 
+                @if(auth()->check() && auth()->user()->isOwner())
                 <!-- 3. Data Sopir (Owner Only) -->
                 <a href="{{ route('drivers.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all {{ request()->is('drivers*') ? 'bg-gradient-to-r from-sky-500/20 to-indigo-500/10 text-sky-400 border border-sky-500/30 shadow-lg shadow-sky-500/10 font-bold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50' }}">
                     <div class="flex items-center gap-3">
@@ -407,10 +407,10 @@
                         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-900">
                             <span class="material-symbols-outlined text-lg text-sky-400">dashboard</span> Dashboard
                         </a>
-                        @if(auth()->check() && auth()->user()->isOwner())
                         <a href="{{ route('vehicles.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-900">
                             <span class="material-symbols-outlined text-lg text-sky-400">directions_car</span> Data Kendaraan
                         </a>
+                        @if(auth()->check() && auth()->user()->isOwner())
                         <a href="{{ route('drivers.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:bg-slate-900">
                             <span class="material-symbols-outlined text-lg text-sky-400">badge</span> Data Sopir
                         </a>
